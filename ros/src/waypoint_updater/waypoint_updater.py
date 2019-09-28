@@ -77,10 +77,12 @@ class WaypointUpdater(object):
         return closest_idx
     
     def publish_waypoints(self, closest_idx):
-        lane = Lane()
-        lane.header = self.base_waypoints.header
-        lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
-        self.final_waypoint_pub.publish(lane)
+        #lane = Lane()
+        #lane.header = self.base_waypoints.header
+        #lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
+        #self.final_waypoint_pub.publish(lane)
+        final_lane = self.generate_lane()
+        self.final_waypoint_pub.publish(final_lane)
         
     def generate_lane(self):
         lane = Lane()
@@ -96,7 +98,21 @@ class WaypointUpdater(object):
         return lane
     
     def decelerate_waypoints(self, base_waypoints, closest_idx):
-        pass
+        temp = []
+        for i, wp in enumerate(waypoints):
+            p = Waypoint()
+            p.pose = wp.pose
+            
+            stop_idx = max(self.stopline_wp_idx - closest_idx - 2, 0)
+            dist = self.distance(waypoints, i, stop_idx)
+            vel = math.sqrt(2 * MAX_DECEL * dist)
+            if vel < 1.:
+                vel = 0.
+                
+            p.twist.twist.linear.x = min(vel, wp.twist.twist.linear.x)
+            temp.append(p)
+            
+        return temp
     
     def pose_cb(self, msg):
         # TODO: Implement
