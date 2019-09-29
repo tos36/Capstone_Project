@@ -24,7 +24,7 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 75 # Number of waypoints we will publish. You can change this number
 
 
 class WaypointUpdater(object):
@@ -79,13 +79,20 @@ class WaypointUpdater(object):
         return closest_idx
     
     def publish_waypoints(self, closest_idx):
-        #lane = Lane()
-        #lane.header = self.base_waypoints.header
-        #lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
-        #self.final_waypoint_pub.publish(lane)
-        final_lane = self.generate_lane()
-        self.final_waypoints_pub.publish(final_lane)
+        lane = Lane()
+        lane.header = self.base_waypoints.header
         
+        farthest_idx = closest_idx + LOOKAHEAD_WPS
+        base_waypoints = self.base_waypoints.waypoints[closest_idx:farthest_idx]
+        
+        if self.stopline_wp_idx == -1 or (self.stopline_wp_idx >= farthest_idx):
+            lane.waypoints = base_waypoints
+        else:
+            lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
+            
+        self.final_waypoints_pub.publish(lane)
+    
+    """
     def generate_lane(self):
         lane = Lane()
         
@@ -98,6 +105,7 @@ class WaypointUpdater(object):
         else:
             lane.waypoints = self.decelerate_waypoints(base_waypoints, closest_idx)
         return lane
+    """
     
     def decelerate_waypoints(self, base_waypoints, closest_idx):
         temp = []
