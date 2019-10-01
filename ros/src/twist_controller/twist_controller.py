@@ -45,10 +45,10 @@ class Controller(object):
         steering = self.yaw_controller.get_steering(linear_vel, angular_vel, current_vel)
         
         # Write to ros log
-        rospy.logwarn("Angular vel: {0}".format(angular_vel))
-        rospy.logwarn("Vref, Vfb:[%s, %s][m/s]",format(linear_vel),format(current_vel))
-        rospy.logwarn("Target angular velocity: {0}".format(angular_vel))
-        rospy.logwarn("Current velocity: {0}".format(current_vel))
+        #rospy.logwarn("Angular vel: {0}".format(angular_vel))
+        #rospy.logwarn("Vref, Vfb:[%s, %s][m/s]",format(linear_vel),format(current_vel))
+        #rospy.logwarn("Target angular velocity: {0}".format(angular_vel))
+        #rospy.logwarn("Current velocity: {0}".format(current_vel))
         
         
         vel_error = linear_vel - current_vel
@@ -72,9 +72,9 @@ class Controller(object):
         
         #print(throttle, brake, steering)
         
-        rospy.logwarn("Steering: {0}".format(steering))
-        rospy.logwarn("Throttle: {0}".format(throttle))
-        rospy.logwarn("Brake: {0}".format(brake))
+        #rospy.logwarn("Steering: {0}".format(steering))
+        #rospy.logwarn("Throttle: {0}".format(throttle))
+        #rospy.logwarn("Brake: {0}".format(brake))
         
         return throttle, brake, steering
         
